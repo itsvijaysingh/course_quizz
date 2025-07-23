@@ -8,11 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
     openQuizLink.addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("quizModal1").style.display = "flex";
+      // GTM Event: Fires when the user starts the quiz
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "course_fit_quiz_start",
+      });
     });
   }
 
   // Handle Next button logic and save answers
-  document.querySelectorAll(".next-btn").forEach(button => {
+  document.querySelectorAll(".next-btn").forEach((button) => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
 
@@ -22,14 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentModal = document.getElementById(currentId);
       const nextModal = document.getElementById(nextId);
 
-      const selected = currentModal.querySelector('input[type="radio"]:checked');
+      const selected = currentModal.querySelector(
+        'input[type="radio"]:checked'
+      );
       if (!selected) {
         alert("Please select an option before continuing.");
         return;
       }
 
-      // Save the answer
-      quizAnswers[currentId] = selected.nextElementSibling?.textContent?.trim() || selected.value;
+      // Extract the step number from the modal ID (e.g., "quizModal1" -> 1)
+      const stepNumber = parseInt(currentId.replace("quizModal", ""));
+
+      // Save the answer and question for context
+      const question =
+        currentModal.querySelector(".question")?.textContent?.trim() || "";
+      const answer =
+        selected.nextElementSibling?.textContent?.trim() || selected.value;
+      quizAnswers[currentId] = answer;
+
+      // GTM Event: Fires for each completed step with a dynamic event name
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: `course_fit_quiz_step_${stepNumber}`,
+        quiz_question: question,
+        quiz_answer: answer,
+      });
 
       currentModal.style.display = "none";
       if (nextModal) nextModal.style.display = "flex";
@@ -37,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Handle Previous buttons
-  document.querySelectorAll(".prev-btn").forEach(button => {
+  document.querySelectorAll(".prev-btn").forEach((button) => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
 
@@ -53,20 +75,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Handle "Back To Home" links to close quiz
-  document.querySelectorAll(".close-modal-btn").forEach(button => {
+  document.querySelectorAll(".close-modal-btn").forEach((button) => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
-      document.querySelectorAll(".quiz-modal").forEach(modal => {
+      document.querySelectorAll(".quiz-modal").forEach((modal) => {
         modal.style.display = "none";
       });
     });
   });
 
-  // Handle final form submission
-  document.getElementById('Course-Fit-Quiz').addEventListener('submit', function (e) {
+ // Handle final form submission
+  document.getElementById("Course-Fit-Quiz").addEventListener("submit", function (e) {
     e.preventDefault();
-    console.log('QUIX ANSWERS: ',quizAnswers);
-    
+    console.log("QUIZ ANSWERS: ", quizAnswers);
     
     $.ajax({
       url: 'https://vickyknowsapi-dev.link/api/v1/contact/websitequiz',
@@ -94,6 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
     const form = e.target;
+    const userEmail = form.querySelector('[name="email"]').value;
+
+    // GTM Event: Fires when the final form is submitted
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "course_fit_quiz_submission",
+      user_email: userEmail
+    });
+
+    
     const fields = [
       { name: 'firstname', value: form.querySelector('[name="firstname"]').value },
       { name: 'lastname', value: form.querySelector('[name="lastname"]').value },
