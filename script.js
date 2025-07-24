@@ -170,7 +170,7 @@ function createContact(e, courseName){
     console.log('submission resp : ' + response);
     if (response.ok) {
       
-      const form = e.target;
+    const form = e.target;
     // Capture all form values
     const userFirstname = form.querySelector('[name="firstname"]').value;
     const userLastname = form.querySelector('[name="lastname"]').value;
@@ -185,12 +185,6 @@ function createContact(e, courseName){
       user_email: userEmail
     });
 
-    // GTM Event: Fires when the final form is submitted
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "course_fit_quiz_submission",
-      user_email: userEmail
-    });
       form.reset();
       //closeAllModals();
     } else {
