@@ -180,7 +180,8 @@ function createContact(e, courseName) {
                 event: "course_fit_quiz_submission",
                 user_firstname: userFirstname,
                 user_lastname: userLastname,
-                user_email: userEmail
+                user_email: userEmail,
+                quiz_course_recommended: courseName
             });
 
             form.reset();
