@@ -115,7 +115,19 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
     const form = e.target;
+    // Capture all form values
+    const userFirstname = form.querySelector('[name="firstname"]').value;
+    const userLastname = form.querySelector('[name="lastname"]').value;
     const userEmail = form.querySelector('[name="email"]').value;
+  
+    // GTM Event: Push all form values to the data layer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "course_fit_quiz_submission",
+      user_firstname: userFirstname,
+      user_lastname: userLastname,
+      user_email: userEmail
+    });
 
     // GTM Event: Fires when the final form is submitted
     window.dataLayer = window.dataLayer || [];
