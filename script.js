@@ -133,65 +133,63 @@ function closeAllModals() {
     modal.style.display = 'none';
   });
 }
-function createContact(e, courseName){
-  console.log('Create Contact');
-  const form = e.target;
-
-  const fields = [
-    { name: 'firstname', value: form.querySelector('[name="firstname"]').value },
-    { name: 'lastname', value: form.querySelector('[name="lastname"]').value },
-    { name: 'email', value: form.querySelector('[name="email"]').value },
-    { name: 'contact_status', value: form.querySelector('[name="contact_status"]').value },
-    { name: 'cfq_q1_resp', value: quizAnswers.quizModal1 },
-    { name: 'cfq_q2_resp', value: quizAnswers.quizModal2 },
-    { name: 'cfq_q3_resp', value: quizAnswers.quizModal3 },
-    { name: 'cfq_q4_resp', value: quizAnswers.quizModal4 },
-    { name: 'cfq_q5_resp', value: quizAnswers.quizModal5 },
-    { name: 'cfq_q6_resp', value: quizAnswers.quizModal6 },
-    { name: 'cfq_q7_resp', value: quizAnswers.quizModal7 },
-    { name: 'cfq_q8_resp', value: quizAnswers.quizModal8 },
-    { name: 'course_name', value: courseName}
-  ];
-
-
-  const payload = {
-    fields: fields,
-    context: {
-      pageUri: window.location.href,
-      pageName: document.title
-    }
-  };
-  console.log('payload => ' + JSON.stringify(payload));
-  fetch('https://api.hsforms.com/submissions/v3/integration/submit/44742474/e0c8ddda-f83a-4e70-9896-0862d2a7827d', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).then(response => {
-    console.log('submission resp : ' + response);
-    if (response.ok) {
-      
+function createContact(e, courseName) {
+    console.log('Create Contact');
     const form = e.target;
-    // Capture all form values
-    const userFirstname = form.querySelector('[name="firstname"]').value;
-    const userLastname = form.querySelector('[name="lastname"]').value;
-    const userEmail = form.querySelector('[name="email"]').value;
-  
-    // GTM Event: Push all form values to the data layer
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "course_fit_quiz_submission",
-      user_firstname: userFirstname,
-      user_lastname: userLastname,
-      user_email: userEmail
-    });
 
-      form.reset();
-      //closeAllModals();
-    } else {
-      alert("Submission failed. Please try again.");
-    }
-  }).catch(error => {
-    console.error("Error:", error);
-    alert("An error occurred. Please try again.");
-  });
+    const fields = [
+        { name: 'firstname', value: form.querySelector('[name="firstname"]').value },
+        { name: 'lastname', value: form.querySelector('[name="lastname"]').value },
+        { name: 'email', value: form.querySelector('[name="email"]').value },
+        { name: 'contact_status', value: form.querySelector('[name="contact_status"]').value },
+        { name: 'cfq_q1_resp', value: quizAnswers.quizModal1 },
+        { name: 'cfq_q2_resp', value: quizAnswers.quizModal2 },
+        { name: 'cfq_q3_resp', value: quizAnswers.quizModal3 },
+        { name: 'cfq_q4_resp', value: quizAnswers.quizModal4 },
+        { name: 'cfq_q5_resp', value: quizAnswers.quizModal5 },
+        { name: 'cfq_q6_resp', value: quizAnswers.quizModal6 },
+        { name: 'cfq_q7_resp', value: quizAnswers.quizModal7 },
+        { name: 'cfq_q8_resp', value: quizAnswers.quizModal8 },
+        { name: 'course_name', value: courseName }
+    ];
+
+    const payload = {
+        fields: fields,
+        context: {
+            pageUri: window.location.href,
+            pageName: document.title
+        }
+    };
+
+    console.log('payload => ' + JSON.stringify(payload));
+    fetch('https://api.hsforms.com/submissions/v3/integration/submit/44742474/e0c8ddda-f83a-4e70-9896-0862d2a7827d', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(response => {
+        console.log('submission resp : ' + response);
+        if (response.ok) {
+            // Capture all form values
+            const userFirstname = form.querySelector('[name="firstname"]').value;
+            const userLastname = form.querySelector('[name="lastname"]').value;
+            const userEmail = form.querySelector('[name="email"]').value;
+
+            // GTM Event: Push the event ONCE with all data.
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: "course_fit_quiz_submission",
+                user_firstname: userFirstname,
+                user_lastname: userLastname,
+                user_email: userEmail
+            });
+
+            form.reset();
+          //closeAllModals();
+        } else {
+            alert("Submission failed. Please try again.");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
 }
